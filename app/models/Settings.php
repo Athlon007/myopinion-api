@@ -32,12 +32,12 @@ class Settings
         $this->dateLastTopicSelected = $value;
     }
 
-    public function getHideOptionsWithNReports(): int
+    public function getHideOpinionssWithNReports(): int
     {
         return $this->hideOptionsWithNReports;
     }
 
-    public function setHideOptionsWithNReports(int $value): void
+    public function setHideOpinionsWithNReports(int $value): void
     {
         $this->hideOptionsWithNReports = $value;
     }

@@ -10,6 +10,7 @@ use Services\TopicService;
 
 use DateTime;
 
+use function PHPSTORM_META\type;
 
 class SettingsRepository extends Repository
 {
@@ -20,6 +21,10 @@ class SettingsRepository extends Repository
         $stmt->execute();
 
         $topicService = new TopicService();
+        $selectedNthTopic = null;
+        $dateLastTopicSelected = null;
+        $hideOpinionsWithNReports = null;
+        $maxReactionsPerPage = null;
 
         while ($row = $stmt->fetch()) {
             $selectedNthTopic = $topicService->getNthTopic($row["selectedNthTopic"]);
@@ -28,12 +33,13 @@ class SettingsRepository extends Repository
             $maxReactionsPerPage = $row["maxReactionsPerPage"];
         }
 
-        return new Settings(
-            $selectedNthTopic,
-            $dateLastTopicSelected,
-            $hideOpinionsWithNReports,
-            $maxReactionsPerPage
-        );
+        $settings = new Settings();
+        $settings->setSelectedTopic($selectedNthTopic);
+        $settings->setDateLastTopicSelected($dateLastTopicSelected);
+        $settings->setHideOpinionsWithNReports($hideOpinionsWithNReports);
+        $settings->setMaxReactionsPerPage($maxReactionsPerPage);
+
+        return $settings;
     }
 
     public function getSelectedNthTopic(): int

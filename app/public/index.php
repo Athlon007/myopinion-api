@@ -26,6 +26,7 @@ $router->get('/accounts', 'LoginController@getAll');
 $router->get('/accounts/(\d+)', 'LoginController@getById');
 $router->post('/accounts', 'LoginController@insert');
 $router->put('/accounts/(\d+)', 'LoginController@update');
+$router->delete('/accounts/(\d+)', 'LoginController@delete');
 
 // Account Types
 // === Account Types ===
