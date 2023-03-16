@@ -4,13 +4,11 @@ namespace Repositories;
 
 use PDO;
 use Models\Topic;
-use Repositories\OpinionRepository;
 
 class TopicRepository extends Repository
 {
     private function topicsBuilder(array $array): array
     {
-        $opinionRepo = new OpinionRepository();
         $output = array();
 
         foreach ($array as $row) {
@@ -19,7 +17,6 @@ class TopicRepository extends Repository
             $topic = new Topic();
             $topic->setId($id);
             $topic->setName($name);
-            $topic->setOpinions($opinionRepo->getOpinionsForTopicByNew($topic));
             array_push($output, $topic);
         }
 
