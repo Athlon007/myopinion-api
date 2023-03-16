@@ -5,6 +5,7 @@ namespace Services;
 use Models\Topic;
 use Repositories\TopicRepository;
 use Models\Exceptions\IllegalOperationException;
+use Services\SettingsService;
 
 class TopicService
 {
@@ -60,6 +61,20 @@ class TopicService
         return $this->getTopicById($id);
     }
 
+    public function update(Topic $topic): Topic
+    {
+        $id = htmlspecialchars($topic->getId());
+        $title = htmlspecialchars($topic->getName());
+
+        if (strlen($title) == 0) {
+            throw new IllegalOperationException("Cannot add empty topics.");
+        }
+
+        $this->repo->update($id, $title);
+
+        return $this->getTopicById($id);
+    }
+
     public function getTopicById(int $id): Topic
     {
         $id = htmlspecialchars($id);
@@ -72,7 +87,6 @@ class TopicService
 
     public function deleteById(int $id): void
     {
-        require_once("SettingsService.php");
         $settingsService = new SettingsService();
         if ($settingsService->getSettings()->getSelectedTopic()->getId() == $id) {
             require_once("../models/Exceptions/IllegalOperationException.php");

@@ -3,6 +3,7 @@
 namespace Controllers;
 
 use Services\TopicService;
+use Models\Exceptions\IllegalOperationException;
 
 class TopicController extends Controller
 {
@@ -62,6 +63,40 @@ class TopicController extends Controller
 
         if (!$this->checkIfTokenHolderIsAdmin($token)) {
             $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        $inputTopic = $this->createObjectFromPostedJson("Topic", true);
+
+        try {
+            $topic = $this->service->update($inputTopic);
+            $this->respond($topic);
+        } catch (IllegalOperationException $e) {
+            $this->respondWithError(400, $e->getMessage());
+            return;
+        }
+    }
+
+    public function delete()
+    {
+        $token = $this->checkForJwt();
+        if (!$token) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        if (!$this->checkIfTokenHolderIsAdmin($token)) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        $id = basename($_SERVER['REQUEST_URI']);
+
+        try {
+            $this->service->deleteById($id);
+            $this->respond(["message" => "Topic deleted successfully."]);
+        } catch (IllegalOperationException $e) {
+            $this->respondWithError(400, $e->getMessage());
             return;
         }
     }

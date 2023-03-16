@@ -69,7 +69,7 @@ class Controller
         echo json_encode($data);
     }
 
-    protected function createObjectFromPostedJson($className)
+    protected function createObjectFromPostedJson($className, $useBasenameIdValue = false)
     {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
@@ -81,6 +81,10 @@ class Controller
         foreach ($data as $key => $value) {
             if (is_object($value)) {
                 continue;
+            }
+
+            if ($useBasenameIdValue && $key == "id") {
+                $value = basename($_SERVER['REQUEST_URI']);
             }
 
             $methodName = "set" . ucfirst($key);

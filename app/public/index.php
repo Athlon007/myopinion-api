@@ -17,6 +17,8 @@ $router->setNamespace('Controllers');
 $router->get('/topics', 'TopicController@getAll');
 $router->get('/topics/(\d+)', 'TopicController@getTopic');
 $router->post('/topics', 'TopicController@insertTopic');
+$router->put('/topics/(\d+)', 'TopicController@update');
+$router->delete('/topics/(\d+)', 'TopicController@delete');
 
 // === Login ===
 $router->post('/login', 'LoginController@login');
