@@ -1,6 +1,6 @@
 # My Opinion - Back-end
 
-The Web Development 2 project, which builds upon the Web Development 1 project. This is a PHP back-end.
+The Web Development 2 project, which builds upon the Web Development 1 project. This is the PHP back-end.
 
 For the front-end, visit <http://github.com/Athlon007/myopinion-vue>.
 
