@@ -1,14 +1,16 @@
-# My Opinion
+# My Opinion - Back-end
 
-Web Development project, share your opinion on stuff!
+The Web Development 2 project, which builds upon the Web Development 1 project. This is a PHP back-end.
 
-<http://myopinion.kfigura.nl/>
+For the front-end, visit <http://github.com/Athlon007/myopinion-vue>.
+
+Hosted at: <http://api.myopinion.kfigura.nl/>
 
 Please use the "developmentdb.sql" to populate the database, and edit config.php as needed.
 
-Requires **PHP 8.1** to run!
+Requires **PHP 8.0** to run!
 
-Contains Nginx and Apache server configs (as I needed it for hosting on my server).
+Contains Nginx and Apache server configs.
 
 ## Admin Panel Login
 
@@ -19,8 +21,13 @@ Contains Nginx and Apache server configs (as I needed it for hosting on my serve
 
 ### Moderator Account
 
-- Username: `moderator`
-- Password: `Password2@`
+- Username: `newUser`
+- Password: `Password123!`
+
+## Used Libraries
+
+- [bramus/Router](https://github.com/bramus/router)
+- [Firebase/PHP-JWT](https://github.com/firebase/php-jwt)
 
 ## Author
 
