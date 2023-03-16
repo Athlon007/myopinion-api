@@ -4,13 +4,11 @@ namespace Models;
 
 use JsonSerializable;
 use Models\ReactionEntity;
-use Models\Opinion;
 
 class Reaction implements JsonSerializable
 {
     private int $id;
     private ReactionEntity $reactionEntity;
-    private Opinion $opinion;
     private int $count;
 
     public function getId(): int
@@ -31,16 +29,6 @@ class Reaction implements JsonSerializable
     public function setReactionEntity(ReactionEntity $value): void
     {
         $this->reactionEntity = $value;
-    }
-
-    public function getOpinion(): Opinion
-    {
-        return $this->opinion;
-    }
-
-    public function setOpinion(Opinion $value): void
-    {
-        $this->opinion = $value;
     }
 
     public function getCount(): int

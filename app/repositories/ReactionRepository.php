@@ -9,7 +9,7 @@ use Models\Opinion;
 
 class ReactionRepository extends Repository
 {
-    private function reactionBuilder(array $input, Opinion $opinion): array
+    private function reactionBuilder(array $input): array
     {
         $reactionEntityService = new ReactionEntityRepository();
 
@@ -22,7 +22,6 @@ class ReactionRepository extends Repository
             $reaction = new Reaction();
             $reaction->setId($id);
             $reaction->setReactionEntity($reactionEntity);
-            $reaction->setOpinion($opinion);
             $reaction->setCount($count);
 
             array_push($output, $reaction);
@@ -36,19 +35,21 @@ class ReactionRepository extends Repository
         $opinionID = $opinion->getId();
         $stmt->bindParam(":opinionID", $opinionID, PDO::PARAM_INT);
         $stmt->execute();
-        return $this->reactionBuilder($stmt->fetchAll(), $opinion);
+        return $this->reactionBuilder($stmt->fetchAll());
     }
 
-    public function createNewReaction(int $opinionID, int $reactionID): void
+    public function createNewReaction(int $opinionID, int $reactionID): int
     {
         $sql = "INSERT INTO Reactions (reactionID, opinionID, count) VALUES (:reactionID, :opinionID, 1)";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindParam(":reactionID", $reactionID, PDO::PARAM_INT);
         $stmt->bindParam(":opinionID", $opinionID, PDO::PARAM_INT);
         $stmt->execute();
+
+        return $this->connection->lastInsertId();
     }
 
-    public function increaseCountOfExistingOpinion(int $opinionID, int $reactionID): void
+    public function increaseCountOfExistingOpinion(int $opinionID, int $reactionID)
     {
         $sql = "UPDATE Reactions SET count = count + 1 WHERE opinionID = :opinionID AND reactionID = :reactionID";
         $stmt = $this->connection->prepare($sql);
@@ -77,5 +78,20 @@ class ReactionRepository extends Repository
         $stmt->bindParam(":opinionID", $opinionID, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch()["reactionCount"];
+    }
+
+    public function getReactionEntryForOpinionAndReaction($opinionId, $reacitonEntityId): ?Reaction
+    {
+        $sql = "SELECT id, reactionID, opinionID, count FROM Reactions WHERE opinionID = :opinionID AND reactionID = :reactionID";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindParam(":opinionID", $opinionId, PDO::PARAM_INT);
+        $stmt->bindParam(":reactionID", $reacitonEntityId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        if (empty($result)) {
+            return null;
+        }
+
+        return $this->reactionBuilder($result)[0];
     }
 }

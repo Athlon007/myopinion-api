@@ -48,5 +48,9 @@ $router->get('/settings', 'SettingsController@getAll');
 $router->put('/settings', 'SettingsController@update');
 $router->patch('/settings/force-next-topic', 'SettingsController@forceNextTopic');
 
+// === Reactions ===
+$router->post('/react/(\d+)', 'ReactionController@react');
+$router->get('/reactions', 'ReactionController@getAvailableReactions');
+
 // ================
 $router->run();
