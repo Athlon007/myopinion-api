@@ -2,6 +2,7 @@
 
 namespace Controllers;
 
+use Exception;
 use Services\TopicService;
 use Models\Exceptions\IllegalOperationException;
 use Services\SettingsService;
@@ -17,16 +18,42 @@ class TopicController extends Controller
 
     public function getAll()
     {
+        $token = $this->checkForJwt();
+        if (!$token) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        if (!$this->checkIfTokenHolderIsAdmin($token)) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
         $topics = $this->service->getAll();
         $this->respond($topics);
     }
 
     public function getTopic()
     {
-        $id = basename($_SERVER['REQUEST_URI']);
-        $topic = $this->service->getTopicById($id);
+        $token = $this->checkForJwt();
+        if (!$token) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
 
-        $this->respond($topic);
+        if (!$this->checkIfTokenHolderIsAdmin($token)) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        $id = basename($_SERVER['REQUEST_URI']);
+
+        try {
+            $topic = $this->service->getTopicById($id);
+            $this->respond($topic);
+        } catch (Exception $e) {
+            $this->respondWithError(500, "Unable to get topic.");
+        }
     }
 
     public function insertTopic()

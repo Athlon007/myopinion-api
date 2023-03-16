@@ -24,25 +24,11 @@ class OpinionService
 
     public function getOpinionsForTopicByNew(Topic $topic, int $offset = -1, int $limit = -1)
     {
-        if ($offset == -1) {
-            $offset = $this->getPageOffset();
-        }
-        if ($limit == -1) {
-            $limit = $this->getOpinionsLimit();
-        }
-
         return $this->repo->getOpinionsForTopicByNew($topic, true, $offset, $limit);
     }
 
     public function getOpinionsForTopicByPopular(Topic $topic, int $offset = -1, int $limit = -1): array
     {
-        if ($offset == -1) {
-            $offset = $this->getPageOffset();
-        }
-        if ($limit == -1) {
-            $limit = $this->getOpinionsLimit();
-        }
-
         return $this->repo->getOpinionsForTopicByPopularity($topic, true, $offset, $limit);
     }
 
@@ -54,31 +40,6 @@ class OpinionService
         $id = $this->repo->insertOpinion($topic->getId(), $opinion->getTitle(), $opinion->getContent());
 
         return $this->getOpinionById($id);
-    }
-
-    // Returns how many pages are there supposed to be for the specific topic.
-    public function pagesForTopic(Topic $topic): int
-    {
-        $settings = $this->settingsService->getSettings();
-        return ceil($this->repo->getOpinionsForTopicCount($topic) / $settings->getMaxReactionsPerPage());
-    }
-
-    public function getPageOffset()
-    {
-        $page = 1;
-        if (isset($_GET) && isset($_GET["page"])) {
-            $page = $_GET["page"];
-        }
-
-        $settings = $this->settingsService->getSettings();
-
-        return ($page - 1) * $settings->getMaxReactionsPerPage();
-    }
-
-    public function getOpinionsLimit()
-    {
-        $settings = $this->settingsService->getSettings();
-        return $settings->getMaxReactionsPerPage();
     }
 
     public function deleteById(int $id): void
