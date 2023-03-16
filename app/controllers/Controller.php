@@ -111,4 +111,21 @@ class Controller
 
         return true;
     }
+
+    protected function checkIfTokenHolderIsModerator($jwt)
+    {
+        $username = $jwt->data->username;
+
+        $service = new LoginService();
+        $user = $service->getUserByEmail($username);
+
+        $accountTypeService = new AccountTypeService();
+        $adminType = $accountTypeService->getAccountTypeById(2);
+
+        if ($user->getAccountType()->getId() != $adminType->getId()) {
+            return false;
+        }
+
+        return true;
+    }
 }

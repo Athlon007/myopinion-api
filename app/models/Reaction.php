@@ -13,14 +13,6 @@ class Reaction implements JsonSerializable
     private Opinion $opinion;
     private int $count;
 
-    public function __construct(int $id, ReactionEntity $reactionEntity, Opinion $opinion, int $count)
-    {
-        $this->id = $id;
-        $this->reactionEntity = $reactionEntity;
-        $this->opinion = $opinion;
-        $this->count = $count;
-    }
-
     public function getId(): int
     {
         return $this->id;
@@ -64,9 +56,9 @@ class Reaction implements JsonSerializable
     public function jsonSerialize(): mixed
     {
         return [
-            "id" => $this->id,
-            "reaction_entity" => $this->reactionEntity,
-            "count" => $this->count
+            "id" => $this->getId(),
+            "reaction_entity" => $this->getReactionEntity(),
+            "count" => $this->getCount()
         ];
     }
 }

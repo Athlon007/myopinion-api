@@ -3,6 +3,7 @@
 namespace Services;
 
 use Models\AccountType;
+use Models\Exceptions\IllegalOperationException;
 use Repositories\AccountTypeRepository;
 
 class AccountTypeService
@@ -46,6 +47,10 @@ class AccountTypeService
 
     public function delete(int $id)
     {
+        if ($id == 1 || $id == 2) {
+            throw new IllegalOperationException("Cannot delete default account types!");
+        }
+
         $id = htmlspecialchars($id);
         $this->repo->delete($id);
     }

@@ -31,17 +31,7 @@ class OpinionService
             $limit = $this->getOpinionsLimit();
         }
 
-        $opinions = $this->repo->getOpinionsForTopic($topic, true, $offset, $limit);
-
-        $reactionService = new ReactionService();
-        for ($i = 0; $i < count($opinions); $i++) {
-            $opinion = $opinions[$i];
-            $opinionReactions = $reactionService->getAllForOpinion($opinion);
-            $opinion->setAllReactions($opinionReactions);
-            $opinions[$i] = $opinion;
-        }
-
-        return $opinions;
+        return $this->repo->getOpinionsForTopicByNew($topic, true, $offset, $limit);
     }
 
     public function getOpinionsForTopicByPopular(Topic $topic, int $offset = -1, int $limit = -1): array
@@ -53,25 +43,17 @@ class OpinionService
             $limit = $this->getOpinionsLimit();
         }
 
-        $opinions = $this->repo->getOpinionsForTopicByPopularity($topic, true, $offset, $limit);
-
-        $reactionService = new ReactionService();
-        for ($i = 0; $i < count($opinions); $i++) {
-            $opinion = $opinions[$i];
-            $opinionReactions = $reactionService->getAllForOpinion($opinion);
-            $opinion->setAllReactions($opinionReactions);
-            $opinions[$i] = $opinion;
-        }
-
-        return $opinions;
+        return $this->repo->getOpinionsForTopicByPopularity($topic, true, $offset, $limit);
     }
 
-    public function insertOpinion(int $topicID, string $title, string $content): void
+    public function insertOpinion(Opinion $opinion, Topic $topic): Opinion
     {
-        $title = htmlspecialchars($title);
-        $content = htmlspecialchars($content);
+        $opinion->setTitle($opinion->getTitle());
+        $opinion->setContent($opinion->getContent());
 
-        $this->repo->insertOpinion($topicID, $title, $content);
+        $id = $this->repo->insertOpinion($topic->getId(), $opinion->getTitle(), $opinion->getContent());
+
+        return $this->getOpinionById($id);
     }
 
     // Returns how many pages are there supposed to be for the specific topic.
@@ -105,15 +87,11 @@ class OpinionService
         $this->repo->deleteById($id);
     }
 
-    public function updateById(int $id, string $title, string $content, Account $editingUser): void
+    public function update(Opinion $opinion): Opinion
     {
-        if ($editingUser->getAccountType() != AccountType::Admin) {
-            throw new IllegalOperationException("Only admins can edit opinions!");
-        }
-
-        $id = htmlspecialchars($id);
-        $title = htmlspecialchars($title);
-        $content = htmlspecialchars($content);
+        $id = htmlspecialchars($opinion->getId());
+        $title = htmlspecialchars($opinion->getTitle());
+        $content = htmlspecialchars($opinion->getContent());
 
         if (strlen($title) == 0) {
             throw new OpinionAlterException("Title cannot be empty.");
@@ -123,16 +101,13 @@ class OpinionService
         }
 
         $this->repo->update($id, $title, $content);
+
+        return $this->getOpinionById($id);
     }
 
     public function getOpinionById(int $id): ?Opinion
     {
         $id = htmlspecialchars($id);
-        $opinion = $this->repo->selectById($id);
-        $reactionService = new ReactionService();
-        $reactions = $reactionService->getAllForOpinion($opinion);
-        $opinion->setAllReactions($reactions);
-
-        return $opinion;
+        return $this->repo->selectById($id);
     }
 }

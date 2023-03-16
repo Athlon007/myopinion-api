@@ -2,33 +2,19 @@
 
 namespace Controllers;
 
+use Services\SettingsService;
 use Exception;
-use Services\AccountTypeService;
 
-class AccountTypeController extends Controller
+class SettingsController extends Controller
 {
     private $service;
 
     public function __construct()
     {
-        $this->service = new AccountTypeService();
+        $this->service = new SettingsService();
     }
 
     public function getAll()
-    {
-        $accountTypes = $this->service->getAll();
-        $this->respond($accountTypes);
-    }
-
-    public function getById()
-    {
-        $id = basename($_SERVER['REQUEST_URI']);
-        $accountType = $this->service->getAccountTypeById($id);
-
-        $this->respond($accountType);
-    }
-
-    public function insert()
     {
         $token = $this->checkForJwt();
         if (!$token) {
@@ -36,16 +22,18 @@ class AccountTypeController extends Controller
             return;
         }
 
-        // check if admin
+        // only admin can see all settings
         if (!$this->checkIfTokenHolderIsAdmin($token)) {
             $this->respondWithError(401, "Unauthorized");
             return;
         }
 
-        $inserted = $this->createObjectFromPostedJson("AccountType");
-        $accountType = $this->service->insert($inserted);
-
-        $this->respond($accountType);
+        try {
+            $settings = $this->service->getSettings();
+            $this->respond($settings);
+        } catch (Exception $e) {
+            $this->respondWithError(500, "Unable to get settings.");
+        }
     }
 
     public function update()
@@ -56,19 +44,23 @@ class AccountTypeController extends Controller
             return;
         }
 
-        // check if admin
+        // only admin can update settings
         if (!$this->checkIfTokenHolderIsAdmin($token)) {
             $this->respondWithError(401, "Unauthorized");
             return;
         }
 
-        $updated = $this->createObjectFromPostedJson("AccountType", true);
-        $accountType = $this->service->update($updated);
+        $inputSettings = $this->createObjectFromPostedJson("Settings", true);
 
-        $this->respond($accountType);
+        try {
+            $settings = $this->service->update($inputSettings);
+            $this->respond($settings);
+        } catch (Exception $e) {
+            $this->respondWithError(500, "Unable to update settings.");
+        }
     }
 
-    public function delete()
+    public function forceNextTopic()
     {
         $token = $this->checkForJwt();
         if (!$token) {
@@ -76,19 +68,17 @@ class AccountTypeController extends Controller
             return;
         }
 
-        // check if admin
+        // only admin can force next topic
         if (!$this->checkIfTokenHolderIsAdmin($token)) {
             $this->respondWithError(401, "Unauthorized");
             return;
         }
 
         try {
-            $id = basename($_SERVER['REQUEST_URI']);
-            $this->service->delete($id);
-
-            $this->respond("Account type deleted");
+            $settings = $this->service->forceNextTopic();
+            $this->respond($settings);
         } catch (Exception $e) {
-            $this->respondWithError(500, $e->getMessage());
+            $this->respondWithError(500, "Unable to force next topic.");
         }
     }
 }

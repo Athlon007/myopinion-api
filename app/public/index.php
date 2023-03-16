@@ -12,13 +12,13 @@ $router = new \Bramus\Router\Router();
 
 $router->setNamespace('Controllers');
 
-// routes for the products endpoint
 // === Topics ===
 $router->get('/topics', 'TopicController@getAll');
 $router->get('/topics/(\d+)', 'TopicController@getTopic');
 $router->post('/topics', 'TopicController@insertTopic');
 $router->put('/topics/(\d+)', 'TopicController@update');
 $router->delete('/topics/(\d+)', 'TopicController@delete');
+$router->get('/topics/today', 'TopicController@getTodayTopic');
 
 // === Login ===
 $router->post('/login', 'LoginController@login');
@@ -28,13 +28,25 @@ $router->post('/accounts', 'LoginController@insert');
 $router->put('/accounts/(\d+)', 'LoginController@update');
 $router->delete('/accounts/(\d+)', 'LoginController@delete');
 
-// Account Types
 // === Account Types ===
 $router->get('/account-types', 'AccountTypeController@getAll');
 $router->get('/account-types/(\d+)', 'AccountTypeController@getById');
 $router->post('/account-types', 'AccountTypeController@insert');
 $router->put('/account-types/(\d+)', 'AccountTypeController@update');
 $router->delete('/account-types/(\d+)', 'AccountTypeController@delete');
+
+// === Opinions ===
+$router->get('/topics/(\d+)/opinions', 'OpinionController@getAllForTopic');
+$router->get('/opinions/(\d+)', 'OpinionController@get');
+$router->get('/topics/today/opinions', 'OpinionController@getTodayOpinions');
+$router->post('/opinions', 'OpinionController@insert');
+$router->put('/opinions/(\d+)', 'OpinionController@update');
+$router->delete('/opinions/(\d+)', 'OpinionController@delete');
+
+// === Settings ===
+$router->get('/settings', 'SettingsController@getAll');
+$router->put('/settings', 'SettingsController@update');
+$router->patch('/settings/force-next-topic', 'SettingsController@forceNextTopic');
 
 // ================
 $router->run();

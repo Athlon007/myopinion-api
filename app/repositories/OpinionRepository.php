@@ -6,23 +6,33 @@ use PDO;
 use PDOException;
 use Models\Opinion;
 use Models\Topic;
+use Repositories\ReactionRepository;
 
 class OpinionRepository extends Repository
 {
-    private function opinionBuilder(array $arr, Topic $topic): array
+    private function opinionBuilder(array $arr): array
     {
+        $reactionRepo = new ReactionRepository();
+
         $output = array();
         foreach ($arr as $row) {
             $id = $row["id"];
             $title = $row["title"];
             $content = $row["content"];
-            array_push($output, new Opinion($id, $title, $content, $topic));
+
+            $opinion = new Opinion();
+            $opinion->setId($id);
+            $opinion->setTitle($title);
+            $opinion->setContent($content);
+            $opinion->setReactions($reactionRepo->getAllForOpinion($opinion));
+
+            array_push($output, $opinion);
         }
 
         return $output;
     }
 
-    public function getOpinionsForTopic(
+    public function getOpinionsForTopicByNew(
         Topic $topic,
         bool $descending = false,
         int $offset = -1,
@@ -44,7 +54,7 @@ class OpinionRepository extends Repository
         $stmt->bindParam(":topicID", $topicID, PDO::PARAM_INT);
         $stmt->execute();
 
-        return $this->opinionBuilder($stmt->fetchAll(), $topic);
+        return $this->opinionBuilder($stmt->fetchAll());
     }
 
     public function getOpinionsForTopicByPopularity(
@@ -79,10 +89,10 @@ class OpinionRepository extends Repository
         $stmt->bindParam(":topicID", $topicID, PDO::PARAM_INT);
         $stmt->execute();
 
-        return $this->opinionBuilder($stmt->fetchAll(), $topic);
+        return $this->opinionBuilder($stmt->fetchAll());
     }
 
-    public function insertOpinion(int $topicID, string $title, string $content): void
+    public function insertOpinion(int $topicID, string $title, string $content): int
     {
         $sql = "INSERT INTO Opinions (title, content, topicID) VALUES (:title, :content, :topicID)";
         $stmt = $this->connection->prepare($sql);
@@ -90,6 +100,8 @@ class OpinionRepository extends Repository
         $stmt->bindValue(":content", $content, PDO::PARAM_STR);
         $stmt->bindValue(':topicID', $topicID, PDO::PARAM_INT);
         $stmt->execute();
+
+        return $this->connection->lastInsertId();
     }
 
     public function getOpinionsForTopicCount(Topic $topic): int
@@ -126,7 +138,7 @@ class OpinionRepository extends Repository
         $stmt->bindValue(":opinionID", $opinionID, PDO::PARAM_INT);
         $stmt->execute();
 
-        $arrOutput = $this->opinionBuilder($stmt->fetchAll(), new Topic(-1, ""));
+        $arrOutput = $this->opinionBuilder($stmt->fetchAll());
 
         if (empty($arrOutput)) {
             return null;

@@ -4,6 +4,7 @@ namespace Controllers;
 
 use Services\TopicService;
 use Models\Exceptions\IllegalOperationException;
+use Services\SettingsService;
 
 class TopicController extends Controller
 {
@@ -99,5 +100,12 @@ class TopicController extends Controller
             $this->respondWithError(400, $e->getMessage());
             return;
         }
+    }
+
+    public function getTodayTopic()
+    {
+        $settingsService = new SettingsService();
+        $settings = $settingsService->getSettings();
+        $this->respond($settings->getSelectedTopic());
     }
 }

@@ -15,7 +15,13 @@ class ReactionEntityRepository extends Repository
             $id = $row["id"];
             $htmlEntity = $row["htmlEntity"];
             $isNegativeOpinion = $row["isNegative"];
-            array_push($output, new ReactionEntity($id, $htmlEntity, $isNegativeOpinion));
+
+            $entity = new ReactionEntity();
+            $entity->setId($id);
+            $entity->setHtmlEntity($htmlEntity);
+            $entity->setIsNegativeOpinion($isNegativeOpinion);
+
+            array_push($output, $entity);
         }
         return $output;
     }

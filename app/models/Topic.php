@@ -8,6 +8,7 @@ class Topic implements JsonSerializable
 {
     private int $id;
     private string $name;
+    private array $opinions;
 
     public function getId(): int
     {
@@ -29,11 +30,22 @@ class Topic implements JsonSerializable
         $this->name = $value;
     }
 
+    public function getOpinions(): array
+    {
+        return $this->opinions;
+    }
+
+    public function setOpinions($value): void
+    {
+        $this->opinions = $value;
+    }
+
     public function jsonSerialize(): mixed
     {
         return [
-            "id" => $this->id,
-            "name" => $this->name
+            "id" => $this->getId(),
+            "name" => $this->getName(),
+            "opinions" => $this->getOpinions()
         ];
     }
 }

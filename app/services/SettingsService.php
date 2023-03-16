@@ -60,23 +60,20 @@ class SettingsService
         $this->repo->setSelectedNthTopic($nextID, date('y-m-d'));
     }
 
-    public function setMaxReactionsPerPage($value): void
-    {
-        $value = htmlspecialchars($value);
-
-        require_once("../models/Exceptions/IllegalOperationException.php");
-        if (!is_numeric($value)) {
-            throw new IllegalOperationException("Value must be a digit.");
-        }
-
-        $this->repo->setMaxReactionsPerPage($value);
-    }
-
     /**
      * Forces the current topic to be abandoned and selects the next one from the list.
      */
     public function forceNextTopic(): void
     {
         $this->changeTopicToNext();
+    }
+
+    public function update(Settings $settings): Settings
+    {
+        $selectedNthTopic = htmlspecialchars($settings->getSelectedTopic()->getId());
+        $dateLastTopicSelected = $settings->getDateLastTopicSelected()->format('y-m-d');
+
+        $this->repo->update($selectedNthTopic, $dateLastTopicSelected);
+        return $this->getSettings();
     }
 }

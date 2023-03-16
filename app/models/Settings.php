@@ -5,12 +5,12 @@ namespace Models;
 use DateTime;
 use Models\Topic;
 
-class Settings
+use JsonSerializable;
+
+class Settings implements JsonSerializable
 {
     private ?Topic $selectedTopic;
     private DateTime $dateLastTopicSelected;
-    private int $hideOptionsWithNReports;
-    private int $maxReactionsPerPage;
 
     public function getSelectedTopic(): ?Topic
     {
@@ -32,23 +32,12 @@ class Settings
         $this->dateLastTopicSelected = $value;
     }
 
-    public function getHideOpinionssWithNReports(): int
-    {
-        return $this->hideOptionsWithNReports;
-    }
 
-    public function setHideOpinionsWithNReports(int $value): void
+    public function jsonSerialize(): mixed
     {
-        $this->hideOptionsWithNReports = $value;
-    }
-
-    public function getMaxReactionsPerPage(): int
-    {
-        return $this->maxReactionsPerPage;
-    }
-
-    public function setMaxReactionsPerPage(int $value): void
-    {
-        $this->maxReactionsPerPage = $value;
+        return [
+            "selected_topic" => $this->getSelectedTopic(),
+            "date_last_topic_selected" => $this->getDateLastTopicSelected(),
+        ];
     }
 }

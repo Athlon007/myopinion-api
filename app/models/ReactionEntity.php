@@ -11,13 +11,6 @@ class ReactionEntity implements JsonSerializable
     private string $htmlEntity;
     private bool $isNegativeOpinion;
 
-    public function __construct(int $id, string $htmlEntity, bool $isNegativeOpinion)
-    {
-        $this->id = $id;
-        $this->htmlEntity = $htmlEntity;
-        $this->isNegativeOpinion = $isNegativeOpinion;
-    }
-
     public function getId(): int
     {
         return $this->id;

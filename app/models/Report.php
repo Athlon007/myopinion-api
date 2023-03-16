@@ -4,19 +4,13 @@ namespace Models;
 
 use Models\Opinion;
 use Models\ReportType;
+use JsonSerializable;
 
-class Report
+class Report implements JsonSerializable
 {
     private int $id;
     private Opinion $opinion;
     private ReportType $reportType;
-
-    public function __construct(int $id, Opinion $opinion, ReportType $reportType)
-    {
-        $this->id = $id;
-        $this->opinion = $opinion;
-        $this->reportType = $reportType;
-    }
 
     public function getId(): int
     {
@@ -46,5 +40,14 @@ class Report
     public function setReportType(ReportType $value): void
     {
         $this->reportType = $value;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            "id" => $this->getId(),
+            "opinion" => $this->getOpinion(),
+            "report_type" => $this->getReportType()
+        ];
     }
 }

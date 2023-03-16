@@ -14,7 +14,14 @@ class ReportRepository extends Repository
     {
         $output = array();
         foreach ($array as $row) {
-            $report = new Report($row["id"], $opinion, ReportType::from($row["reportType"]));
+            $id = $row["id"];
+            $reportType = $row["reportType"];
+
+            $report = new Report();
+            $report->setId($id);
+            $report->setOpinion($opinion);
+            $report->setReportType(ReportType::initByInt($reportType));
+
             array_push($output, $report);
         }
 
@@ -36,7 +43,7 @@ class ReportRepository extends Repository
         $stmt = $this->connection->prepare($sql);
         $id = $opinion->getId();
         $stmt->bindParam(":opinionID", $id, PDO::PARAM_INT);
-        $reportTypeID = $reportType->value;
+        $reportTypeID = $reportType[0];
         $stmt->bindParam(":reportType", $reportTypeID, PDO::PARAM_INT);
         $stmt->execute();
     }
@@ -82,7 +89,7 @@ class ReportRepository extends Repository
     {
         $sql = "SELECT COUNT(id) AS occurences FROM Reports WHERE reportType = :reportType AND opinionID = :opinionID";
         $stmt = $this->connection->prepare($sql);
-        $reportTypeAsNumber = $reportType->value;
+        $reportTypeAsNumber = $reportType->getValue();
         $opinionID = $opinion->getId();
         $stmt->bindParam(":reportType", $reportTypeAsNumber, PDO::PARAM_INT);
         $stmt->bindParam(":opinionID", $opinionID, PDO::PARAM_INT);

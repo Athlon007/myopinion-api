@@ -23,21 +23,15 @@ class SettingsRepository extends Repository
         $topicService = new TopicService();
         $selectedNthTopic = null;
         $dateLastTopicSelected = null;
-        $hideOpinionsWithNReports = null;
-        $maxReactionsPerPage = null;
 
         while ($row = $stmt->fetch()) {
             $selectedNthTopic = $topicService->getNthTopic($row["selectedNthTopic"]);
             $dateLastTopicSelected = DateTime::createFromFormat("Y-m-d", $row["dateLastTopicSelected"]);
-            $hideOpinionsWithNReports = $row["hideOpinionsWithNReports"];
-            $maxReactionsPerPage = $row["maxReactionsPerPage"];
         }
 
         $settings = new Settings();
         $settings->setSelectedTopic($selectedNthTopic);
         $settings->setDateLastTopicSelected($dateLastTopicSelected);
-        $settings->setHideOpinionsWithNReports($hideOpinionsWithNReports);
-        $settings->setMaxReactionsPerPage($maxReactionsPerPage);
 
         return $settings;
     }
@@ -61,6 +55,14 @@ class SettingsRepository extends Repository
     {
         $stmt = $this->connection->prepare("UPDATE Settings SET maxReactionsPerPage = :value");
         $stmt->bindValue(":value", $value);
+        $stmt->execute();
+    }
+
+    public function update($selectedNthTopic, $dateLastTopicSelected)
+    {
+        $stmt = $this->connection->prepare("UPDATE Settings SET selectedNthTopic = :selectedNthTopic, dateLastTopicSelected = :dateLastTopicSelected");
+        $stmt->bindValue(":selectedNthTopic", $selectedNthTopic, PDO::PARAM_INT);
+        $stmt->bindValue(":dateLastTopicSelected", $dateLastTopicSelected);
         $stmt->execute();
     }
 }

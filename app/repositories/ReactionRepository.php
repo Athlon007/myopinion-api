@@ -16,9 +16,16 @@ class ReactionRepository extends Repository
         $output = array();
         foreach ($input as $row) {
             $id = $row["id"];
-            $reaction = $reactionEntityService->getById($row["reactionID"]);
+            $reactionEntity = $reactionEntityService->getById($row["reactionID"]);
             $count = $row["count"];
-            array_push($output, new Reaction($id, $reaction, $opinion, $count));
+
+            $reaction = new Reaction();
+            $reaction->setId($id);
+            $reaction->setReactionEntity($reactionEntity);
+            $reaction->setOpinion($opinion);
+            $reaction->setCount($count);
+
+            array_push($output, $reaction);
         }
         return $output;
     }
