@@ -53,7 +53,7 @@ class Controller
 
     protected function respond($data)
     {
-        $this->respondWithCode(200, ["data" => $data]);
+        $this->respondWithCode(200, $data);
     }
 
     protected function respondWithError($httpcode, $message)
