@@ -26,19 +26,10 @@ class ComposerStaticInitef4979532b25573e19a699ead027e0e2
         'E' => 
         array (
             'Exceptions\\' => 11,
-            'Endroid\\QrCode\\' => 15,
-        ),
-        'D' => 
-        array (
-            'DASPRiD\\Enum\\' => 13,
         ),
         'C' => 
         array (
             'Controllers\\' => 12,
-        ),
-        'B' => 
-        array (
-            'BaconQrCode\\' => 12,
         ),
     );
 
@@ -63,21 +54,9 @@ class ComposerStaticInitef4979532b25573e19a699ead027e0e2
         array (
             0 => __DIR__ . '/../..' . '/models/exceptions',
         ),
-        'Endroid\\QrCode\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/endroid/qr-code/src',
-        ),
-        'DASPRiD\\Enum\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/dasprid/enum/src',
-        ),
         'Controllers\\' => 
         array (
             0 => __DIR__ . '/../..' . '/controllers',
-        ),
-        'BaconQrCode\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/bacon/bacon-qr-code/src',
         ),
     );
 

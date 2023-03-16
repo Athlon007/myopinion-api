@@ -43,15 +43,21 @@ class TopicService
         $this->repo->update($id, $title);
     }
 
-    public function addTopic(string $title): void
+    public function addTopic(Topic $topic): ?Topic
     {
-        $title = htmlspecialchars($title);
+        $title = htmlspecialchars($topic->getName());
 
         if (strlen($title) == 0) {
             throw new IllegalOperationException("Cannot add empty topics.");
         }
 
-        $this->repo->insert($title);
+        $id = $this->repo->insert($title);
+
+        if ($id == null) {
+            return null;
+        }
+
+        return $this->getTopicById($id);
     }
 
     public function getTopicById(int $id): Topic

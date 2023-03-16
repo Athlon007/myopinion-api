@@ -5,15 +5,18 @@ namespace Controllers;
 use Exception;
 use \Firebase\JWT\JWT;
 use \Firebase\JWT\Key;
+use Models;
+use Time;
+use Services\LoginService;
+use Services\AccountTypeService;
 
 class Controller
 {
-    function checkForJwt()
+    protected function checkForJwt()
     {
         // Check for token header
         if (!isset($_SERVER['HTTP_AUTHORIZATION'])) {
-            $this->respondWithError(401, "No token provided");
-            return;
+            return false;
         }
 
         // Read JWT from header
@@ -22,25 +25,38 @@ class Controller
         $arr = explode(" ", $authHeader);
         $jwt = $arr[1];
 
+        $loginService = new LoginService();
+
         if ($jwt) {
             try {
                 $decoded = JWT::decode($jwt, new Key(SECRET, 'HS256'));
-                // username is now found in
-                // echo $decoded->data->username;
+
+                // Check if user exists
+                $user = $loginService->getUserById($decoded->data->id);
+
+                if ($user == null) {
+                    return false;
+                }
+
+                // check if expired
+                $now = time();
+                if ($now > $decoded->exp) {
+                    return false;
+                }
+
                 return $decoded;
             } catch (Exception $e) {
-                $this->respondWithError(401, $e->getMessage());
-                return;
+                return false;
             }
         }
     }
 
-    function respond($data)
+    protected function respond($data)
     {
-        $this->respondWithCode(200, $data);
+        $this->respondWithCode(200, ["data" => $data]);
     }
 
-    function respondWithError($httpcode, $message)
+    protected function respondWithError($httpcode, $message)
     {
         $data = array('errorMessage' => $message);
         $this->respondWithCode($httpcode, $data);
@@ -53,10 +69,13 @@ class Controller
         echo json_encode($data);
     }
 
-    function createObjectFromPostedJson($className)
+    protected function createObjectFromPostedJson($className)
     {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
+
+        // set namespace to Models
+        $className = "Models\\" . $className;
 
         $object = new $className();
         foreach ($data as $key => $value) {
@@ -64,11 +83,28 @@ class Controller
                 continue;
             }
 
-            $key = ucfirst($key);
+            $methodName = "set" . ucfirst($key);
 
-            $object->set($key)($value);
+            $object->$methodName($value);
         }
 
         return $object;
+    }
+
+    protected function checkIfTokenHolderIsAdmin($jwt)
+    {
+        $username = $jwt->data->username;
+
+        $service = new LoginService();
+        $user = $service->getUserByEmail($username);
+
+        $accountTypeService = new AccountTypeService();
+        $adminType = $accountTypeService->getAccountTypeById(1);
+
+        if ($user->getAccountType()->getId() != $adminType->getId()) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -19,7 +19,7 @@ class TopicController extends Controller
         $this->respond($topics);
     }
 
-    function getTopic()
+    public function getTopic()
     {
         $id = basename($_SERVER['REQUEST_URI']);
         $topic = $this->service->getTopicById($id);
@@ -27,7 +27,42 @@ class TopicController extends Controller
         $this->respond($topic);
     }
 
-    function insertTopic()
+    public function insertTopic()
     {
+        $token = $this->checkForJwt();
+        if (!$token) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        if (!$this->checkIfTokenHolderIsAdmin($token)) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        $inputTopic = $this->createObjectFromPostedJson("Topic");
+
+        $topic = $this->service->addTopic($inputTopic);
+
+        if ($topic == null) {
+            $this->respondWithError(500, "Unable to add topic.");
+            return;
+        }
+
+        $this->respond($topic);
+    }
+
+    public function update()
+    {
+        $token = $this->checkForJwt();
+        if (!$token) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        if (!$this->checkIfTokenHolderIsAdmin($token)) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
     }
 }

@@ -14,7 +14,10 @@ class TopicRepository extends Repository
         foreach ($array as $row) {
             $id = $row["id"];
             $name = $row["name"];
-            array_push($output, new Topic($id, $name));
+            $topic = new Topic();
+            $topic->setId($id);
+            $topic->setName($name);
+            array_push($output, $topic);
         }
 
         return $output;
@@ -66,12 +69,14 @@ class TopicRepository extends Repository
         $stmt->execute();
     }
 
-    public function insert(string $name): void
+    public function insert(string $name): int
     {
         $sql = "INSERT INTO Topics (name) VALUES (:name)";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue(":name", $name, PDO::PARAM_STR);
         $stmt->execute();
+
+        return $this->connection->lastInsertId();
     }
 
     public function delete(int $id): void

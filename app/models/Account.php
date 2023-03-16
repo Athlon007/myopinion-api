@@ -4,7 +4,7 @@ namespace Models;
 
 use JsonSerializable;
 
-class Account
+class Account implements JsonSerializable
 {
     private int $id;
     private string $username;
@@ -13,28 +13,12 @@ class Account
     private string $salt;
     private AccountType $accountType;
 
-    public function __construct(
-        int $id,
-        string $username,
-        string $email,
-        string $passwordHash,
-        string $salt,
-        AccountType $accountType
-    ) {
-        $this->id = $id;
-        $this->username = $username;
-        $this->email = $email;
-        $this->passwordHash = $passwordHash;
-        $this->salt = $salt;
-        $this->accountType = $accountType;
-    }
-
-    public function getID(): int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setID(int $id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
@@ -87,5 +71,16 @@ class Account
     public function setAccountType(AccountType $value): void
     {
         $this->accountType = $value;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            "id" => $this->getId(),
+            "username" => $this->getUsername(),
+            "email" => $this->getUsername(),
+            "passwordHash" => $this->getPasswordHash(),
+            "accountType" => $this->getAccountType()
+        ];
     }
 }

@@ -24,34 +24,6 @@ class LoginService
         $this->repo = new LoginRepository();
     }
 
-    /**
-     * Checks if user is currently logged in.
-     * @return bool Returns true, if user is logged in.
-     */
-    public function isLoggedIn(): bool
-    {
-        // If the user with provided ID does not exist anymore, log out.
-        if (
-            !isset($_SESSION["user_id"]) ||
-            !isset($_SESSION["login_timestamp"]) ||
-            !$this->doesIdExist($_SESSION["user_id"])
-        ) {
-            $this->logout();
-            return false;
-        }
-
-        $loginTime = new DateTime($_SESSION["login_timestamp"]);
-        $diff = $loginTime->diff(new DateTime(date('Y-m-d H:i:s')));
-        $minutesLogged = $diff->days * 24 * 60 + $diff->h * 60 + $diff->i;
-
-        // If user has been logged in for longer than the maximum time, log him out.
-        if ($minutesLogged > self::MAX_MINUTES_LOGGED_IN) {
-            $this->logout();
-            return false;
-        }
-
-        return true;
-    }
 
     // Returns true, if one (or more) accounts exists.
     public function isSetup(): bool
@@ -77,7 +49,7 @@ class LoginService
     /**
      * Creates a new account.
      */
-    public function createAccount(string $username, string $email, string $password, AccountType $accountType)
+    public function createAccount(string $username, string $email, string $password, AccountType $accountType): Account
     {
         $errors = "";
         if ($this->doesUsernameExist($username)) {
@@ -97,7 +69,8 @@ class LoginService
         $salt = htmlspecialchars($this->generateSalt());
         $hash = htmlspecialchars($this->generatePasswordHash($password, $salt));
 
-        $this->repo->insert($username, $email, $hash, $salt, $accountType);
+        $id = $this->repo->insert($username, $email, $hash, $salt, $accountType);
+        return $this->getUserById($id);
     }
 
     /**
@@ -150,22 +123,12 @@ class LoginService
     }
 
     /**
-     * Checks if ID exists.
-     * @param int $id ID to look for.
-     * @return bool True, if ID exists in database, false if not.
-     */
-    private function doesIdExist(int $id): bool
-    {
-        return $this->repo->getRowsCountForId($id) > 0;
-    }
-
-    /**
      * Returns an account by its email address.
      * @param string $email Email with which user should be found.
      * @return Account account object.
      * @throws AccountNotFoundException Thrown, if the account with provided e-mail does not exist.
      */
-    private function getUserByEmail(string $email): Account
+    public function getUserByEmail(string $email): Account
     {
         $email = htmlspecialchars($email);
 
@@ -185,6 +148,9 @@ class LoginService
      */
     public function login(string $email, string $password): Account
     {
+        // Delay to prevent brute force attacks
+        sleep(2);
+
         $email = htmlspecialchars($email);
         $password = htmlspecialchars($password);
         $account = $this->getUserByEmail($email);
@@ -199,16 +165,11 @@ class LoginService
         return $account;
     }
 
-    /**
-     * Ends session and logs the user out.
-     */
-    public function logout(): void
+    public function getUserById(int $id): ?Account
     {
-        unset($_SESSION["user_id"]);
-        unset($_SESSION["login_timestamp"]);
-        if (session_status() == PHP_SESSION_ACTIVE) {
-            session_destroy();
-        }
+        $id = htmlspecialchars($id);
+
+        return $this->repo->getAccountById($id);
     }
 
     /**
@@ -223,21 +184,6 @@ class LoginService
         return password_verify($password . $salt, $hash);
     }
 
-    /**
-     * Returns the currently logged in user account.
-     * @return Account Account that is currently logged-in.
-     */
-    public function getCurrentlyLoggedInUser(): ?Account
-    {
-        require_once("../models/Exceptions/SessionFailException.php");
-        if (!isset($_SESSION["user_id"])) {
-            $this->logout();
-            return null;
-            //throw new SessionFailException("You have been logged out.");
-        }
-
-        return $this->repo->getAccountById($_SESSION["user_id"]);
-    }
 
     /**
      * Returns all users.
@@ -283,5 +229,26 @@ class LoginService
     {
         $id = htmlspecialchars($id);
         $this->repo->delete($id);
+    }
+
+    public function updateAccount($id, $username, $email, $password, AccountType $accountType): Account
+    {
+        $id = htmlspecialchars($id);
+        $username = htmlspecialchars($username);
+        $email = htmlspecialchars($email);
+        $password = htmlspecialchars($password);
+        $accountType->setId(htmlspecialchars($accountType->getId()));
+        $accountType->setName(htmlspecialchars($accountType->getName()));
+
+        $this->repo->updateAccount(
+            $id,
+            $username,
+            $email,
+            $accountType
+        );
+
+        $this->updatePassword($id, $password);
+
+        return $this->getUserById($id);
     }
 }

@@ -7,37 +7,24 @@ namespace Models;
 use JsonSerializable;
 use Models\Exceptions\ReportTypeMissingException;
 
-enum ReportType: int implements JsonSerializable
+class ReportType implements JsonSerializable
 {
-    case Hateful = 0;
-    case Harassment = 1;
-    case Misinformation = 2;
-    case Spam = 3;
+    public const HATEFUL = [0, "Hateful or abusive content"];
+    public const HARASSMENT = [1, "Harassment or bulying"];
+    public const MISINFORMATION = [2, "Misinformation"];
+    public const SPAM = [3, "Spam or misleading"];
+
+    private int $value;
 
     public function asString(): string
     {
-        return match ($this) {
-            ReportType::Hateful => "Hateful or abusive content",
-            ReportType::Harassment => "Harassment or bulying",
-            ReportType::Misinformation => "Misinformation",
-            ReportType::Spam => "Spam or misleading"
+        return match ($this->value) {
+            ReportType::HATEFUL[0] => ReportType::HATEFUL[1],
+            ReportType::HARASSMENT[0] => ReportType::HARASSMENT[1],
+            ReportType::MISINFORMATION[0] => ReportType::MISINFORMATION[1],
+            ReportType::SPAM[0] => ReportType::SPAM[1],
+            default => throw new ReportTypeMissingException("Report type with the value '$this->value' does not exist.")
         };
-    }
-
-    public static function getByString(string $value): ReportType
-    {
-        switch ($value) {
-            case "Hateful or abusive content":
-                return ReportType::Hateful;
-            case "Harassment or bulying":
-                return ReportType::Harassment;
-            case "Misinformation":
-                return ReportType::Misinformation;
-            case "Spam or misleading":
-                return ReportType::Spam;
-            default:
-                throw new ReportTypeMissingException("Report type by the name '$value' does not exist.");
-        }
     }
 
     public function jsonSerialize(): mixed
@@ -46,5 +33,64 @@ enum ReportType: int implements JsonSerializable
             "name" => $this->asString(),
             "value" => $this->value
         ];
+    }
+
+    public function setValue(int $value): void
+    {
+        $this->value = $value;
+    }
+
+    public function getValue(): int
+    {
+        return $this->value;
+    }
+
+    public static function initByString(string $value): ReportType
+    {
+        $reportType = new ReportType();
+        switch ($value) {
+            case ReportType::HATEFUL[1]:
+                $reportType->setValue(ReportType::HATEFUL[0]);
+                return $reportType;
+            case ReportType::HARASSMENT[1]:
+                $reportType->setValue(ReportType::HARASSMENT[0]);
+                return $reportType;
+            case ReportType::MISINFORMATION[1]:
+                $reportType->setValue(ReportType::MISINFORMATION[0]);
+                return $reportType;
+            case ReportType::SPAM[1]:
+                $reportType->setValue(ReportType::SPAM[0]);
+                return $reportType;
+            default:
+                throw new ReportTypeMissingException("Report type by the name '$value' does not exist.");
+                break;
+        }
+
+        return $reportType;
+    }
+
+    public static function initByInt(int $id): ReportType
+    {
+        $reportType = new ReportType();
+
+        switch ($id) {
+            case ReportType::HATEFUL[0]:
+                $reportType->setValue(ReportType::HATEFUL[0]);
+                return $reportType;
+            case ReportType::HARASSMENT[0]:
+                $reportType->setValue(ReportType::HARASSMENT[0]);
+                return $reportType;
+            case ReportType::MISINFORMATION[0]:
+                $reportType->setValue(ReportType::MISINFORMATION[0]);
+                return $reportType;
+            case ReportType::SPAM[0]:
+                $reportType->setValue(ReportType::SPAM[0]);
+                return $reportType;
+            default:
+                throw new ReportTypeMissingException("Report type by the id '$id' does not exist.");
+                break;
+        }
+
+        return $reportType;
     }
 }

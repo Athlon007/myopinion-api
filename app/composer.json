@@ -9,7 +9,6 @@
         }
     },
     "require": {
-        "endroid/qr-code": "^4.8",
         "bramus/router": "^1.6",
         "firebase/php-jwt": "^6.4"
     }

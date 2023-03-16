@@ -2,30 +2,39 @@
 
 namespace Models;
 
-use Models\Exceptions\AccountTypeMissingException;
+use JsonSerializable;
 
-enum AccountType: int
+class AccountType implements JsonSerializable
 {
-    case Moderator = 0;
-    case Admin = 1;
+    private int $id;
+    private string $name;
 
-    public function asString(): string
+
+    public function getId(): int
     {
-        return match ($this) {
-            AccountType::Moderator => "Moderator",
-            AccountType::Admin => "Admin"
-        };
+        return $this->id;
     }
 
-    public static function getByString(string $value): AccountType
+    public function setId(int $value): void
     {
-        switch ($value) {
-            case "Moderator":
-                return AccountType::Moderator;
-            case "Admin":
-                return AccountType::Admin;
-            default:
-                throw new AccountTypeMissingException("Account type by the name '$value' does not exist.");
-        }
+        $this->id = $value;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $value): void
+    {
+        $this->name = $value;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            "id" => $this->getId(),
+            "name" => $this->getName(),
+        ];
     }
 }
