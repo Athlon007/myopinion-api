@@ -56,6 +56,7 @@ $router->get('/reactions', 'ReactionController@getAvailableReactions');
 $router->get('/opinions/reports', 'ReportController@getAll');
 $router->get('/reports/types', 'ReportController@getReportTypes');
 $router->post('/opinions/report/(\d+)', 'ReportController@report');
+$router->delete('/opinions/report/(\d+)', 'ReportController@pardon');
 
 // ================
 $router->run();

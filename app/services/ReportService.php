@@ -38,9 +38,9 @@ class ReportService
         return $this->repo->countReportsForOpinion($opinion);
     }
 
-    public function deleteReportsForOpinion(int $opinionID)
+    public function pardonOpinion(Opinion $opinion)
     {
-        $opinionID = htmlspecialchars($opinionID);
+        $opinionID = htmlspecialchars($opinion->getId());
         $this->repo->deleteReportsForOpinion($opinionID);
     }
 }

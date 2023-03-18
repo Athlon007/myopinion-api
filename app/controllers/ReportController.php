@@ -70,11 +70,15 @@ class ReportController extends Controller
 
     public function report()
     {
-
         try {
             $insertedReport = $this->createObjectFromPostedJson("ReportType");
             $opinionService = new OpinionService();
             $opinion = $opinionService->getOpinionById(basename($_SERVER['REQUEST_URI']));
+
+            if ($opinion == null) {
+                $this->respondWithError(404, "Opinion not found.");
+                return;
+            }
 
             $this->service->createReport($opinion, $insertedReport);
 
@@ -91,6 +95,38 @@ class ReportController extends Controller
             $this->respond($output);
         } catch (Exception $e) {
             $this->respondWithError(500, "Unable to report opinion.");
+        }
+    }
+
+    public function pardon()
+    {
+        $token = $this->checkForJwt();
+        if (!$token) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        if (!$this->checkIfTokenHolderIsAdmin($token) && !$this->checkIfTokenHolderIsModerator($token)) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        $opinionId = basename($_SERVER['REQUEST_URI']);
+        try {
+            $opinionService = new OpinionService();
+            $opinion = $opinionService->getOpinionById($opinionId);
+
+            if ($opinion == null) {
+                $this->respondWithError(404, "Opinion not found.");
+                return;
+            }
+
+            $this->service->pardonOpinion($opinion);
+
+            $this->respond(["message" => "Opinion $opinionId pardoned."]);
+        } catch (Exception $e) {
+            $this->respondWithError(500, "Unable to pardon opinion.");
+            return;
         }
     }
 }

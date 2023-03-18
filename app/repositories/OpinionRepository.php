@@ -17,8 +17,8 @@ class OpinionRepository extends Repository
         $output = array();
         foreach ($arr as $row) {
             $id = $row["id"];
-            $title = $row["title"];
-            $content = $row["content"];
+            $title = htmlspecialchars_decode($row["title"]);
+            $content = htmlspecialchars_decode($row["content"]);
 
             $opinion = new Opinion();
             $opinion->setId($id);
