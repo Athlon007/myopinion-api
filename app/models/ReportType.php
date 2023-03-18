@@ -13,6 +13,7 @@ class ReportType implements JsonSerializable
     public const SPAM = [3, "Spam or misleading"];
 
     private int $id;
+    private string $name;
 
     public function asString(): string
     {
@@ -41,6 +42,16 @@ class ReportType implements JsonSerializable
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $value): void
+    {
+        $this->name = $value;
     }
 
     public static function initByString(string $value): ReportType

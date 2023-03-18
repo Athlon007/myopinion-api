@@ -17,6 +17,9 @@ class ReportService
 
     public function createReport(Opinion $opinion, ReportType $reportType): void
     {
+        $reportType->setId(htmlspecialchars($reportType->getId()));
+        $reportType->setName(htmlspecialchars($reportType->getName()));
+
         $this->repo->createReport($opinion, $reportType);
     }
 

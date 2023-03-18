@@ -5,6 +5,7 @@ namespace Controllers;
 use Services\ReportService;
 use Exception;
 use Models\ReportType;
+use Services\OpinionService;
 
 class ReportController extends Controller
 {
@@ -65,5 +66,31 @@ class ReportController extends Controller
     {
         $types = ReportType::getAllTypes();
         $this->respond($types);
+    }
+
+    public function report()
+    {
+
+        try {
+            $insertedReport = $this->createObjectFromPostedJson("ReportType");
+            $opinionService = new OpinionService();
+            $opinion = $opinionService->getOpinionById(basename($_SERVER['REQUEST_URI']));
+
+            $this->service->createReport($opinion, $insertedReport);
+
+            $countReport = $this->service->countReportsForOpinionByType($opinion, $insertedReport);
+
+            $json = $insertedReport->jsonSerialize();
+            $json['count'] = $countReport;
+
+            $output = array(
+                "opinion" => $opinion,
+                "report" => $json
+            );
+
+            $this->respond($output);
+        } catch (Exception $e) {
+            $this->respondWithError(500, "Unable to report opinion.");
+        }
     }
 }

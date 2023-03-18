@@ -43,7 +43,7 @@ class ReportRepository extends Repository
         $stmt = $this->connection->prepare($sql);
         $id = $opinion->getId();
         $stmt->bindParam(":opinionID", $id, PDO::PARAM_INT);
-        $reportTypeID = $reportType[0];
+        $reportTypeID = $reportType->getId();
         $stmt->bindParam(":reportType", $reportTypeID, PDO::PARAM_INT);
         $stmt->execute();
     }

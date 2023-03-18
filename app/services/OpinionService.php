@@ -4,22 +4,17 @@ namespace Services;
 
 use Models\Opinion;
 use Models\Topic;
-use Models\AccountType;
-use Models\Account;
 use Models\Exceptions\OpinionAlterException;
-use Models\Exceptions\IllegalOperationException;
 
 use Repositories\OpinionRepository;
 
 class OpinionService
 {
     private OpinionRepository $repo;
-    private SettingsService $settingsService;
 
     public function __construct()
     {
         $this->repo = new OpinionRepository();
-        $this->settingsService = new SettingsService();
     }
 
     public function getOpinionsForTopicByNew(Topic $topic, int $offset = -1, int $limit = -1)
