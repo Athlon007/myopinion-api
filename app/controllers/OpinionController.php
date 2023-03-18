@@ -87,6 +87,12 @@ class OpinionController extends Controller
         $settings = $settingsService->getSettings();
         $selectedTopic = $settings->getSelectedTopic();
 
+        // Prevent inserting opinion, title or content is empty.
+        if (strlen($inputOpinion->getTitle()) == 0 || strlen($inputOpinion->getContent()) == 0) {
+            $this->respondWithError(400, "Title or content cannot be empty.");
+            return;
+        }
+
         try {
             $opinion = $this->service->insertOpinion($inputOpinion, $selectedTopic);
 

@@ -1,7 +1,5 @@
 <?php
 
-require_once("Exceptions/ReportTypeMissingException.php");
-
 namespace Models;
 
 use JsonSerializable;
@@ -14,35 +12,35 @@ class ReportType implements JsonSerializable
     public const MISINFORMATION = [2, "Misinformation"];
     public const SPAM = [3, "Spam or misleading"];
 
-    private int $value;
+    private int $id;
 
     public function asString(): string
     {
-        return match ($this->value) {
+        return match ($this->id) {
             ReportType::HATEFUL[0] => ReportType::HATEFUL[1],
             ReportType::HARASSMENT[0] => ReportType::HARASSMENT[1],
             ReportType::MISINFORMATION[0] => ReportType::MISINFORMATION[1],
             ReportType::SPAM[0] => ReportType::SPAM[1],
-            default => throw new ReportTypeMissingException("Report type with the value '$this->value' does not exist.")
+            default => throw new ReportTypeMissingException("Report type with the value '$this->id' does not exist.")
         };
     }
 
     public function jsonSerialize(): mixed
     {
         return [
-            "name" => $this->asString(),
-            "value" => $this->value
+            "id" => $this->id,
+            "name" => $this->asString()
         ];
     }
 
-    public function setValue(int $value): void
+    public function setId(int $value): void
     {
-        $this->value = $value;
+        $this->id = $value;
     }
 
-    public function getValue(): int
+    public function getId(): int
     {
-        return $this->value;
+        return $this->id;
     }
 
     public static function initByString(string $value): ReportType
@@ -50,16 +48,16 @@ class ReportType implements JsonSerializable
         $reportType = new ReportType();
         switch ($value) {
             case ReportType::HATEFUL[1]:
-                $reportType->setValue(ReportType::HATEFUL[0]);
+                $reportType->getId(ReportType::HATEFUL[0]);
                 return $reportType;
             case ReportType::HARASSMENT[1]:
-                $reportType->setValue(ReportType::HARASSMENT[0]);
+                $reportType->getId(ReportType::HARASSMENT[0]);
                 return $reportType;
             case ReportType::MISINFORMATION[1]:
-                $reportType->setValue(ReportType::MISINFORMATION[0]);
+                $reportType->getId(ReportType::MISINFORMATION[0]);
                 return $reportType;
             case ReportType::SPAM[1]:
-                $reportType->setValue(ReportType::SPAM[0]);
+                $reportType->getId(ReportType::SPAM[0]);
                 return $reportType;
             default:
                 throw new ReportTypeMissingException("Report type by the name '$value' does not exist.");
@@ -75,16 +73,16 @@ class ReportType implements JsonSerializable
 
         switch ($id) {
             case ReportType::HATEFUL[0]:
-                $reportType->setValue(ReportType::HATEFUL[0]);
+                $reportType->setId(ReportType::HATEFUL[0]);
                 return $reportType;
             case ReportType::HARASSMENT[0]:
-                $reportType->setValue(ReportType::HARASSMENT[0]);
+                $reportType->setId(ReportType::HARASSMENT[0]);
                 return $reportType;
             case ReportType::MISINFORMATION[0]:
-                $reportType->setValue(ReportType::MISINFORMATION[0]);
+                $reportType->setId(ReportType::MISINFORMATION[0]);
                 return $reportType;
             case ReportType::SPAM[0]:
-                $reportType->setValue(ReportType::SPAM[0]);
+                $reportType->setId(ReportType::SPAM[0]);
                 return $reportType;
             default:
                 throw new ReportTypeMissingException("Report type by the id '$id' does not exist.");
@@ -92,5 +90,28 @@ class ReportType implements JsonSerializable
         }
 
         return $reportType;
+    }
+
+    public static function getAllTypes(): array
+    {
+        // bind all to id, name pattern.
+        return [
+            [
+                "id" => ReportType::HATEFUL[0],
+                "name" => ReportType::HATEFUL[1]
+            ],
+            [
+                "id" => ReportType::HARASSMENT[0],
+                "name" => ReportType::HARASSMENT[1]
+            ],
+            [
+                "id" => ReportType::MISINFORMATION[0],
+                "name" => ReportType::MISINFORMATION[1]
+            ],
+            [
+                "id" => ReportType::SPAM[0],
+                "name" => ReportType::SPAM[1]
+            ]
+        ];
     }
 }

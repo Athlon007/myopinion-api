@@ -67,18 +67,20 @@ class ReportRepository extends Repository
             return array();
         }
 
-        require_once("../models/Opinion.php");
-        require_once("../models/Topic.php");
-
-        $topic;
-
         $output = array();
         foreach ($array as $row) {
-            if (!isset($topic)) {
-                $topic = new Topic($row["TopicID"], $row["TopicName"]);
-            }
 
-            $opinion = new Opinion($row["OpinionID"], $row["OpinionTitle"], $row["OpinionContent"], $topic);
+            $topic = new Topic();
+            $topic->setId($row["TopicID"]);
+            $topic->setName($row["TopicName"]);
+
+
+            $opinion = new Opinion();
+            $opinion->setId($row["OpinionID"]);
+            $opinion->setTitle($row["OpinionTitle"]);
+            $opinion->setContent($row["OpinionContent"]);
+            $opinion->setReactions(array());
+
             array_push($output, $opinion);
         }
 
@@ -89,7 +91,7 @@ class ReportRepository extends Repository
     {
         $sql = "SELECT COUNT(id) AS occurences FROM Reports WHERE reportType = :reportType AND opinionID = :opinionID";
         $stmt = $this->connection->prepare($sql);
-        $reportTypeAsNumber = $reportType->getValue();
+        $reportTypeAsNumber = $reportType->getId();
         $opinionID = $opinion->getId();
         $stmt->bindParam(":reportType", $reportTypeAsNumber, PDO::PARAM_INT);
         $stmt->bindParam(":opinionID", $opinionID, PDO::PARAM_INT);

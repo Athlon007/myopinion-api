@@ -52,5 +52,9 @@ $router->patch('/settings/force-next-topic', 'SettingsController@forceNextTopic'
 $router->post('/react/(\d+)', 'ReactionController@react');
 $router->get('/reactions', 'ReactionController@getAvailableReactions');
 
+// === Reports ===
+$router->get('/opinions/reports', 'ReportController@getAll');
+$router->get('/reports/types', 'ReportController@getReportTypes');
+
 // ================
 $router->run();
