@@ -8,10 +8,12 @@ use Services\AccountTypeService;
 use \Firebase\JWT\JWT;
 
 use \Models\Exceptions\AccountNotFoundException;
+use TypeError;
 
 class LoginController extends Controller
 {
     private LoginService $service;
+    const EXPIRE_TIME = 60000;
 
     public function __construct()
     {
@@ -38,6 +40,8 @@ class LoginController extends Controller
             $this->respondWithError(401, $e->getMessage());
         } catch (\Exception $e) {
             $this->respondWithError(500, $e->getMessage());
+        } catch (TypeError $e) {
+            $this->respondWithError(500, $e->getMessage());
         }
     }
 
@@ -48,7 +52,7 @@ class LoginController extends Controller
 
         $issuedAt = time(); // issued at
         $notbefore = $issuedAt; //not valid before
-        $expire = $issuedAt + 3600; // expire in 1 hour
+        $expire = $issuedAt + LoginController::EXPIRE_TIME; // expire in 1 hour
 
         $payload = array(
             "iss" => $issuer,
@@ -193,5 +197,17 @@ class LoginController extends Controller
 
         $this->service->deleteAccount($id);
         $this->respond(array("message" => "Account deleted."));
+    }
+
+    public function getMe()
+    {
+        $token = $this->checkForJwt();
+        if (!$token) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        $user = $this->service->getUserById($token->data->id);
+        $this->respond($user);
     }
 }

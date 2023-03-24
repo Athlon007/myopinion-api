@@ -62,6 +62,36 @@ class ReportController extends Controller
         }
     }
 
+    public function getForOpinion()
+    {
+        $token = $this->checkForJwt();
+        if (!$token) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        if (!$this->checkIfTokenHolderIsAdmin($token) && !$this->checkIfTokenHolderIsModerator($token)) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        try {
+            // id is second last in url
+            $url = explode('/', $_SERVER['REQUEST_URI']);
+            $opinionId = $url[count($url) - 2];
+
+            $opinionService = new OpinionService();
+            $opinion = $opinionService->getOpinionById($opinionId);
+
+            if ($opinion == null) {
+                $this->respondWithError(404, "Opinion not found.");
+                return;
+            }
+        } catch (Exception $e) {
+            $this->respondWithError(500, "Unable to get reports.");
+        }
+    }
+
     public function getReportTypes()
     {
         $types = ReportType::getAllTypes();

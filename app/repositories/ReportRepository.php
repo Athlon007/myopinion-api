@@ -32,7 +32,8 @@ class ReportRepository extends Repository
     {
         $sql = "SELECT id, reportType FROM Reports WHERE opinionID = :opinionID";
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindParam(":opinionID", $opinion->getId(), PDO::PARAM_INT);
+        $id = $opinion->getId();
+        $stmt->bindParam(":opinionID", $id, PDO::PARAM_INT);
         $stmt->execute();
         return $this->reportBuilder($stmt->fetchAll(), $opinion);
     }
@@ -60,7 +61,6 @@ class ReportRepository extends Repository
         $stmt->execute();
         return $this->buildOpinions($stmt->fetchAll());
     }
-
     private function buildOpinions($array): array
     {
         if (count($array) == 0) {

@@ -21,12 +21,13 @@ $router->delete('/topics/(\d+)', 'TopicController@delete');
 $router->get('/topics/today', 'TopicController@getTodayTopic');
 
 // === Login ===
-$router->post('/login', 'LoginController@login');
+$router->post('/accounts/login', 'LoginController@login');
 $router->get('/accounts', 'LoginController@getAll');
 $router->get('/accounts/(\d+)', 'LoginController@getById');
 $router->post('/accounts', 'LoginController@insert');
 $router->put('/accounts/(\d+)', 'LoginController@update');
 $router->delete('/accounts/(\d+)', 'LoginController@delete');
+$router->get('/accounts/me', 'LoginController@getMe');
 
 // === Account Types ===
 $router->get('/account-types', 'AccountTypeController@getAll');
@@ -55,6 +56,7 @@ $router->get('/reactions', 'ReactionController@getAvailableReactions');
 // === Reports ===
 $router->get('/opinions/reports', 'ReportController@getAll');
 $router->get('/reports/types', 'ReportController@getReportTypes');
+$router->get('/opinions/(\d+)/reports', 'ReportController@getForOpinion');
 $router->post('/opinions/report/(\d+)', 'ReportController@report');
 $router->delete('/opinions/report/(\d+)', 'ReportController@pardon');
 

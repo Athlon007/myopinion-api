@@ -43,4 +43,9 @@ class ReportService
         $opinionID = htmlspecialchars($opinion->getId());
         $this->repo->deleteReportsForOpinion($opinionID);
     }
+
+    public function getForOpinion(Opinion $opinion): array
+    {
+        return $this->repo->selectAllForOpinion($opinion);
+    }
 }
