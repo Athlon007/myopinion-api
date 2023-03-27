@@ -236,7 +236,6 @@ class LoginService
         $id = htmlspecialchars($id);
         $username = htmlspecialchars($username);
         $email = htmlspecialchars($email);
-        $password = htmlspecialchars($password);
         $accountType->setId(htmlspecialchars($accountType->getId()));
         $accountType->setName(htmlspecialchars($accountType->getName()));
 
@@ -247,7 +246,10 @@ class LoginService
             $accountType
         );
 
-        $this->updatePassword($id, $password);
+        if (isset($password) && !empty($password)) {
+            $password = htmlspecialchars($password);
+            $this->updatePassword($id, $password);
+        }
 
         return $this->getUserById($id);
     }

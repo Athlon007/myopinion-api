@@ -45,11 +45,12 @@ class ReactionEntityService
         return $hex;
     }
 
-    public function addReaction(string $emoji, bool $isNegative): void
+    public function addReaction(string $emoji, bool $isNegative): ReactionEntity
     {
         $emoji = $this->convertEmojiToHtmlEntity($emoji);
         $isNegative = htmlspecialchars($isNegative);
-        $this->repo->insert($emoji, $isNegative);
+        $id = $this->repo->insert($emoji, $isNegative);
+        return $this->getById($id);
     }
 
     public function deleteReaction(int $id): void

@@ -55,7 +55,7 @@ class ReactionEntityRepository extends Repository
         $stmt->execute();
     }
 
-    public function insert(string $htmlEntity, bool $isNegative)
+    public function insert(string $htmlEntity, bool $isNegative): int
     {
         if (strlen($htmlEntity) == 0) {
             throw new IllegalOperationException("Cannot set empty reactions.");
@@ -66,6 +66,8 @@ class ReactionEntityRepository extends Repository
         $stmt->bindValue(":htmlEntity", $htmlEntity, PDO::PARAM_STR);
         $stmt->bindValue(":isNegative", $isNegative, PDO::PARAM_BOOL);
         $stmt->execute();
+
+        return $this->connection->lastInsertId();
     }
 
     public function delete(int $id)

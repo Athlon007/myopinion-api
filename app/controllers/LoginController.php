@@ -166,7 +166,10 @@ class LoginController extends Controller
         $id = basename($_SERVER['REQUEST_URI']);
         $username = $data->username;
         $email = $data->email;
-        $password = $data->password;
+        $password = "";
+        if (isset($data->password)) {
+            $password = $data->password;
+        }
         $accountType = $accountTypeService->getAccountTypeById($data->accountType->id);
 
         $login = $loginService->getUserById($id);

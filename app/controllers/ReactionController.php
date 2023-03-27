@@ -54,4 +54,73 @@ class ReactionController extends Controller
             $this->respondWithError(500, "Unable to get reactions. " . $e->getMessage());
         }
     }
+
+    public function insert()
+    {
+        $token = $this->checkForJwt();
+        if (!$token) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        if (!$this->checkIfTokenHolderIsAdmin($token)) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        $inputReaction = $this->createObjectFromPostedJson("ReactionEntity");
+
+        try {
+            $reaction = $this->entityService->addReaction($inputReaction->getHtmlEntity(), false);
+            $this->respond($reaction);
+        } catch (Exception $e) {
+            $this->respondWithError(500, "Unable to insert reaction. " . $e->getMessage());
+        }
+    }
+
+    public function update()
+    {
+        $token = $this->checkForJwt();
+        if (!$token) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        if (!$this->checkIfTokenHolderIsAdmin($token)) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        $inputReaction = $this->createObjectFromPostedJson("ReactionEntity");
+
+        try {
+            $reaction = $this->entityService->editReaction($inputReaction->getId(), $inputReaction->getHtmlEntity(), $inputReaction->getIsNegativeOpinion());
+            $this->respond($reaction);
+        } catch (Exception $e) {
+            $this->respondWithError(500, "Unable to update reaction. " . $e->getMessage());
+        }
+    }
+
+    public function delete()
+    {
+        $token = $this->checkForJwt();
+        if (!$token) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        if (!$this->checkIfTokenHolderIsAdmin($token)) {
+            $this->respondWithError(401, "Unauthorized");
+            return;
+        }
+
+        $id = basename($_SERVER['REQUEST_URI']);
+
+        try {
+            $this->entityService->deleteReaction($id);
+            $this->respond(["message" => "Reaction deleted."]);
+        } catch (Exception $e) {
+            $this->respondWithError(500, "Unable to delete reaction. " . $e->getMessage());
+        }
+    }
 }
