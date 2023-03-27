@@ -46,7 +46,6 @@ class Report implements JsonSerializable
     {
         return [
             "id" => $this->getId(),
-            "opinion" => $this->getOpinion(),
             "report_type" => $this->getReportType()
         ];
     }

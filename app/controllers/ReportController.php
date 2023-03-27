@@ -87,6 +87,9 @@ class ReportController extends Controller
                 $this->respondWithError(404, "Opinion not found.");
                 return;
             }
+
+            $reports = $this->service->getForOpinion($opinion);
+            echo json_encode($reports);
         } catch (Exception $e) {
             $this->respondWithError(500, "Unable to get reports.");
         }

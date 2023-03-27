@@ -46,6 +46,20 @@ class ReportService
 
     public function getForOpinion(Opinion $opinion): array
     {
-        return $this->repo->selectAllForOpinion($opinion);
+        $reportTypesWithCount = array();
+        $reportTypes = ReportType::getAllTypes();
+
+        foreach ($reportTypes as $type) {
+            $reportTypeObject = new ReportType();
+            $reportTypeObject->setId($type['id']);
+            $countForType = $this->countReportsForOpinionByType($opinion, $reportTypeObject);
+
+            $json = $reportTypeObject->jsonSerialize();
+            $json['count'] = $countForType;
+
+            $reportTypesWithCount[] = $json;
+        }
+
+        return $reportTypesWithCount;
     }
 }
