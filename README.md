@@ -4,7 +4,7 @@ The Web Development 2 project, which builds upon the Web Development 1 project. 
 
 For the front-end, visit <http://github.com/Athlon007/myopinion-vue>.
 
-Hosted at: <http://api.myopinion.kfigura.nl/>
+Hosted at: ~~http://api.myopinion.kfigura.nl~~
 
 Please use the "developmentdb.sql" to populate the database, and edit config.php as needed.
 
